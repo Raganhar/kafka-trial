@@ -5,8 +5,8 @@ using shared_stuff;
 
 var conf = new ConsumerConfig
 {
-    GroupId = "test-consumer-group",
-    BootstrapServers = "localhost:9092",
+    GroupId = ConstStrings.kafkaGroup,
+    BootstrapServers = ConstStrings.kafkaUrl,
     // Note: The AutoOffsetReset property determines the start offset in the event
     // there are not yet any committed offsets for the consumer group for the
     // topic/partitions of interest. By default, offsets are committed
@@ -18,7 +18,6 @@ var conf = new ConsumerConfig
 using (var c = new ConsumerBuilder<Ignore, string>(conf).Build())
 {
     c.Subscribe(ConstStrings.topic);
-
     CancellationTokenSource cts = new CancellationTokenSource();
     Console.CancelKeyPress += (_, e) =>
     {

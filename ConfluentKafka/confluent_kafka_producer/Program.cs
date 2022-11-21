@@ -3,7 +3,7 @@
 using Confluent.Kafka;
 using shared_stuff;
 
-var config = new ProducerConfig { BootstrapServers = "localhost:9092" };
+var config = new ProducerConfig { BootstrapServers = ConstStrings.kafkaUrl };
 
 // If serializers are not specified, default serializers from
 // `Confluent.Kafka.Serializers` will be automatically used where
