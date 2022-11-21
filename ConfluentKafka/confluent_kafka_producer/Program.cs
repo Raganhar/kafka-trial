@@ -3,7 +3,7 @@
 using Confluent.Kafka;
 using shared_stuff;
 
-var config = new ProducerConfig { BootstrapServers = ConstStrings.kafkaUrl };
+var config = new ProducerConfig { BootstrapServers = ConstStrings.kafkaUrl,Partitioner = Partitioner.Murmur2Random};
 
 // If serializers are not specified, default serializers from
 // `Confluent.Kafka.Serializers` will be automatically used where
