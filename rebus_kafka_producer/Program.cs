@@ -47,7 +47,7 @@ class Program
 #endif
             AutoOffsetReset = AutoOffsetReset.Latest,
             EnablePartitionEof = true,
-            AllowAutoCreateTopics = true
+            AllowAutoCreateTopics = true,
         };
         consumerConfig.Set("fetch.message.max.bytes", "10240");
 
