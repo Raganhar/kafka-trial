@@ -8,11 +8,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "shared_stuff", "shared_stuf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rebus_kafka_consumer", "Rebus\rebus_kafka_consumer\rebus_kafka_consumer.csproj", "{E640FEE4-0058-43C5-ABB8-0989C8AA76EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rebus_kafka_producer", "Rebus\rebus_kafka_producer\rebus_kafka_producer.csproj", "{3FD399E9-C6E8-4CE7-9AFC-B98AF7F85CF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rebus_kafka_simple_producer_consumer", "Rebus\rebus_kafka_simple_producer_consumer\rebus_kafka_simple_producer_consumer.csproj", "{3FD399E9-C6E8-4CE7-9AFC-B98AF7F85CF2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit_kafka_consumer", "MassTransit\MassTransit_kafka_consumer\MassTransit_kafka_consumer.csproj", "{739F519E-C3B5-4530-AEED-F79084A6AC48}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit_kafka_producer", "MassTransit\MassTransit_kafka_producer\MassTransit_kafka_producer.csproj", "{134946A4-646A-413B-9AED-3BFD807E3CEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rebus_kafka_producer", "rebus_kafka_producer\rebus_kafka_producer.csproj", "{6EAEBD76-90D3-4024-B22B-2CCE691136D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,5 +50,9 @@ Global
 		{134946A4-646A-413B-9AED-3BFD807E3CEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{134946A4-646A-413B-9AED-3BFD807E3CEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{134946A4-646A-413B-9AED-3BFD807E3CEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EAEBD76-90D3-4024-B22B-2CCE691136D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EAEBD76-90D3-4024-B22B-2CCE691136D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EAEBD76-90D3-4024-B22B-2CCE691136D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EAEBD76-90D3-4024-B22B-2CCE691136D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
