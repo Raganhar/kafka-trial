@@ -8,41 +8,9 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        // if (args.Length != 2)
-        // {
-        //     Console.WriteLine("Usage: .. brokerList topicName");
-        //     return;
-        // }
-
         string brokerList = ConstStrings.kafkaUrl; // args[0];
         string topicName = ConstStrings.topic; // args[1];
-
-
-        using (var adminClient =
-               new AdminClientBuilder(new AdminClientConfig { BootstrapServers = brokerList }).Build())
-        {
-            try
-            {
-                await adminClient.DeleteTopicsAsync(new[] { topicName });
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-            Thread.Sleep(1000);
-            try
-            {
-                await adminClient.CreateTopicsAsync(new TopicSpecification[]
-                {
-                    new TopicSpecification { Name = topicName, ReplicationFactor = 1, NumPartitions = 3 }
-                });
-            }
-            catch (CreateTopicsException e)
-            {
-                Console.WriteLine($"An error occured creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
-            }
-        }
+        await CreateTopic(brokerList, topicName);
 
         var config = new ProducerConfig { BootstrapServers = brokerList, Partitioner = Partitioner.ConsistentRandom, };
 
@@ -52,11 +20,6 @@ public class Program
             Console.WriteLine("\n-----------------------------------------------------------------------");
             Console.WriteLine($"Producer {producer.Name} producing on topic {topicName}.");
             Console.WriteLine("-----------------------------------------------------------------------");
-            // Console.WriteLine("To create a kafka message with UTF-8 encoded key and value:");
-            // Console.WriteLine("> key value<Enter>");
-            // Console.WriteLine("To create a kafka message with a null key and UTF-8 encoded value:");
-            // Console.WriteLine("> value<enter>");
-            // Console.WriteLine("Ctrl-C to quit.\n");
 
             var cancelled = false;
             Console.CancelKeyPress += (_, e) =>
@@ -90,5 +53,53 @@ public class Program
             // in-flight and no delivery reports waiting to be acknowledged, so there is no
             // need to call producer.Flush before disposing the producer.
         }
+    }
+
+    private static async Task CreateTopic(string brokerList, string topicName)
+    {
+        using (var adminClient =
+               new AdminClientBuilder(new AdminClientConfig { BootstrapServers = brokerList }).Build())
+        {
+            await RecreateTopic(adminClient, topicName);
+            await IncreasePartitionCountTo(adminClient, topicName, 4);
+        }
+    }
+
+    private static async Task RecreateTopic(IAdminClient adminClient, string topicName)
+    {
+        try
+        {
+            await adminClient.DeleteTopicsAsync(new[] { topicName });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+        Thread.Sleep(1000);
+        try
+        {
+            await adminClient.CreateTopicsAsync(new TopicSpecification[]
+            {
+                new TopicSpecification { Name = topicName, ReplicationFactor = 1, NumPartitions = 3 }
+            },new CreateTopicsOptions{});
+        }
+        catch (CreateTopicsException e)
+        {
+            Console.WriteLine($"An error occured creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
+        }
+    }
+
+    private static async Task IncreasePartitionCountTo(IAdminClient adminClient, string topicName, int count)
+    {
+        await adminClient.CreatePartitionsAsync(new List<PartitionsSpecification>
+        {
+            new PartitionsSpecification
+            {
+                Topic = topicName,
+                IncreaseTo = count,
+            }
+        });
     }
 }
