@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Text;
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using shared_stuff;
@@ -38,7 +39,12 @@ public class Program
                     foreach (var i in Enumerable.Range(0, 50))
                     {
                         var deliveryReport = await producer.ProduceAsync(
-                            topicName, new Message<string, string> { Key = $"Key: {i}", Value = i.ToString() });
+                            topicName,
+                            new Message<string, string>
+                            {
+                                Key = $"Key: {i}", Value = i.ToString(),
+                                Headers = AddHeaders(new Dictionary<string, string> { { "headerName", "headerValue" } })
+                            });
 
                         Console.WriteLine($"delivered to: {deliveryReport.TopicPartitionOffset}");
                     }
@@ -53,6 +59,22 @@ public class Program
             // in-flight and no delivery reports waiting to be acknowledged, so there is no
             // need to call producer.Flush before disposing the producer.
         }
+    }
+
+    private static Headers AddHeaders(Dictionary<string, string> headerName)
+    {
+        var addHeaders = new Headers();
+        foreach (var header in headerName.Select(x => new Header(x.Key, Encoding.UTF8.GetBytes(x.Value))))
+        {
+            addHeaders.Add(header);
+        }
+
+        return addHeaders;
+    }
+
+    public static Dictionary<string, string> GetHeaders()
+    {
+        return null;
     }
 
     private static async Task CreateTopic(string brokerList, string topicName)
@@ -83,7 +105,7 @@ public class Program
             await adminClient.CreateTopicsAsync(new TopicSpecification[]
             {
                 new TopicSpecification { Name = topicName, ReplicationFactor = 1, NumPartitions = 3 }
-            },new CreateTopicsOptions{});
+            }, new CreateTopicsOptions { });
         }
         catch (CreateTopicsException e)
         {

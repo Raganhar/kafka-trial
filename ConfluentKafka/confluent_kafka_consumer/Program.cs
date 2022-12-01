@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Text;
 using Confluent.Kafka;
 using shared_stuff;
 
@@ -33,43 +34,7 @@ public class Program
         // is UTF8. The default deserializer for Ignore returns null for all input data
         // (including non-null data).
         using (var consumer = new ConsumerBuilder<Ignore, string>(config)
-                   // Note: All handlers are called on the main .Consume thread.
                    .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
-                   // .SetStatisticsHandler((_, json) => Console.WriteLine($"Statistics: {json}"))
-                   // .SetPartitionsAssignedHandler((c, partitions) =>
-                   // {
-                   //     // Since a cooperative assignor (CooperativeSticky) has been configured, the
-                   //     // partition assignment is incremental (adds partitions to any existing assignment).
-                   //     Console.WriteLine(
-                   //         "Partitions incrementally assigned: [" +
-                   //         string.Join(',', partitions.Select(p => p.Partition.Value)) +
-                   //         "], all: [" +
-                   //         string.Join(',', c.Assignment.Concat(partitions).Select(p => p.Partition.Value)) +
-                   //         "]");
-                   //
-                   //     // Possibly manually specify start offsets by returning a list of topic/partition/offsets
-                   //     // to assign to, e.g.:
-                   //     // return partitions.Select(tp => new TopicPartitionOffset(tp, externalOffsets[tp]));
-                   // })
-                   // .SetPartitionsRevokedHandler((c, partitions) =>
-                   // {
-                   //     // Since a cooperative assignor (CooperativeSticky) has been configured, the revoked
-                   //     // assignment is incremental (may remove only some partitions of the current assignment).
-                   //     var remaining = c.Assignment.Where(atp =>
-                   //         partitions.Where(rtp => rtp.TopicPartition == atp).Count() == 0);
-                   //     Console.WriteLine(
-                   //         "Partitions incrementally revoked: [" +
-                   //         string.Join(',', partitions.Select(p => p.Partition.Value)) +
-                   //         "], remaining: [" +
-                   //         string.Join(',', remaining.Select(p => p.Partition.Value)) +
-                   //         "]");
-                   // })
-                   // .SetPartitionsLostHandler((c, partitions) =>
-                   // {
-                   //     // The lost partitions handler is called when the consumer detects that it has lost ownership
-                   //     // of its assignment (fallen out of the group).
-                   //     Console.WriteLine($"Partitions were lost: [{string.Join(", ", partitions)}]");
-                   // })
                    .Build())
         {
             consumer.Subscribe(topics);
@@ -89,6 +54,8 @@ public class Program
 
                             continue;
                         }
+
+                        var headers = GetHeaders(consumeResult);
 
                         Console.WriteLine(
                             $"Received message at {consumeResult.TopicPartitionOffset}: {consumeResult.Message.Value}");
@@ -117,6 +84,13 @@ public class Program
                 consumer.Close();
             }
         }
+    }
+
+    private static Dictionary<string, string> GetHeaders(ConsumeResult<Ignore, string> consumeResult)
+    {
+        return
+            consumeResult.Message.Headers?.ToDictionary(x => x.Key, x => Encoding.UTF8.GetString(x.GetValueBytes())) ??
+            new Dictionary<string, string>();
     }
 
     /// <summary>
